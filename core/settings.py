@@ -34,11 +34,15 @@ ALLOWED_HOSTS = env.str('ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    #local
+    'test_app.apps.TestAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +82,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 if env.bool('REMOTE_DB'):
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
             'NAME': env.str('MYSQL_DATABASE'),
             'HOST': env.str('MYSQL_HOST'),
             'PORT': env.str('MYSQL_PORT'),
