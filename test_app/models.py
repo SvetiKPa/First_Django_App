@@ -27,5 +27,3 @@ class UserProfile(models.Model):
     posts_count = models.PositiveIntegerField()
     comments_count = models.PositiveIntegerField()
     engagement_rate = models.FloatField()    #5.27
-
-
