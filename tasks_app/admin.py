@@ -11,6 +11,7 @@ from .models import Task, SubTask, Category as TaskCategory
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = ['title', 'status', 'deadline']
+    list_filter = ['deadline']
 
 @admin.register(SubTask)
 class SubTaskAdmin(admin.ModelAdmin):

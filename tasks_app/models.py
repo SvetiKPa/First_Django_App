@@ -12,7 +12,7 @@ class BaseTask(models.Model):
         ('DONE', 'Done'),
     ]
 
-    title = models.CharField(max_length=255, verbose_name="Наименование задачи")
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='NEW')
     deadline = models.DateTimeField(verbose_name="Дедлайн")
@@ -20,6 +20,13 @@ class BaseTask(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'created_date'],
+                name='unique_title_per_date'
+            )
+        ]
+        ordering = ['-created_at']
         abstract = True
 
     def clean(self):
@@ -27,6 +34,8 @@ class BaseTask(models.Model):
         if self.deadline and self.deadline < timezone.now():
             raise ValidationError({'deadline': 'Дедлайн не может быть в прошлом'})
 
+    def __str__(self):
+        return f"{self.deadline} - {self.title}"
 
 class Task(BaseTask):
     categories = models.ManyToManyField(
@@ -38,19 +47,8 @@ class Task(BaseTask):
     )
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title', 'created_date'],
-                name='unique_title_per_date'
-            )
-        ]
-        indexes = [
-            models.Index(fields=['title', 'created_date']),
-        ]
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return f"{self.title} ({self.deadline.strftime('%d.%m.%Y %H:%M')})"
+        db_table = "task_manager_task"
+        verbose_name = "Task"
 
 
 class SubTask(BaseTask):
@@ -60,17 +58,22 @@ class SubTask(BaseTask):
                             )
 
     class Meta:
-        verbose_name = "Подзадача"
-        verbose_name_plural = "Подзадачи"
-        ordering = ['-created_at']
+        db_table = "task_manager_subtask"
+        verbose_name = "Subtask"
 
-    def __str__(self):
-        return f" {self.deadline} - {self.description}"
 
 class Category(models.Model):
     name = models.CharField(
         max_length=100,
-        unique=True,
-        verbose_name="Название категории"
+        unique=True
     )
+
+    class Meta:
+        db_table = "task_manager_category"
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return f"{self.name}"
+
 
