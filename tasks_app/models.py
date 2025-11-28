@@ -29,10 +29,10 @@ class BaseTask(models.Model):
         ordering = ['-created_at']
         abstract = True
 
-    def clean(self):
-        """Валидация дедлайна"""
-        if self.deadline and self.deadline < timezone.now():
-            raise ValidationError({'deadline': 'Дедлайн не может быть в прошлом'})
+    # def clean(self):
+    #     """Валидация дедлайна"""
+    #     if self.deadline and self.deadline < timezone.now():
+    #         raise ValidationError({'deadline': 'Дедлайн не может быть в прошлом'})
 
     def __str__(self):
         return f"{self.deadline} - {self.title}"

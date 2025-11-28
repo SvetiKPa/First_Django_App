@@ -25,7 +25,7 @@ class TaskAdmin(admin.ModelAdmin):
     @admin.display()
     def short_title(self, obj: Task):
         if len(obj.title) > 10:
-            return f"{obj.title[10:]}..."
+            return f"{obj.title[:10]}..."
         return obj.title
 
     fields = ['title', 'status', 'deadline', 'description']
