@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     #local
     'test_app.apps.TestAppConfig',
     'tasks_app.apps.TasksAppConfig',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

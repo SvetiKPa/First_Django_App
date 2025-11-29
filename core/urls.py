@@ -17,9 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 # from test_app.views import hello_world
-from tasks_app.views import hello_world
+from tasks_app.views import (hello_world,
+                             create_new_task,
+                             get_task_by_id,
+                             get_all_tasks, tasks_statistic)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/<str:user_name>', hello_world),
+
+    # CRUD for Task
+
+    path('api/v1/tasks/', get_all_tasks),
+    path('api/v1/tasks/create/', create_new_task),
+    path('api/v1/tasks/<int:task_id>/', get_task_by_id),
+    path('api/v1/tasks_statistic/', tasks_statistic),
 ]
