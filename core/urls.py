@@ -27,6 +27,7 @@ urlpatterns = [
     path('user/<str:user_name>', hello_world),
 
     # CRUD for Task
+
     path('api/v1/tasks/', get_all_tasks),
     path('api/v1/tasks/create/', create_new_task),
     path('api/v1/tasks/<int:task_id>/', get_task_by_id),

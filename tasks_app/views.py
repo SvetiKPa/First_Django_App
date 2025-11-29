@@ -1,4 +1,4 @@
-from time import timezone
+from django.utils import timezone
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -54,10 +54,10 @@ def create_new_task(request: Request) -> Response:
             status=status.HTTP_400_BAD_REQUEST
         )
     try:
-        task_dto.save()
+        task = task_dto.save()
     except Exception as err:
         return Response(
-            data={"error": f"Ошибка сохранения str(err)"},
+            data={"error": f"Ошибка сохранения {str(err)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
     return Response(
@@ -68,7 +68,7 @@ def create_new_task(request: Request) -> Response:
 
 # statistic
 # таких как общее количество задач,
-# количество задач по каждому статусу и количество просроченных задач.  TODO
+# количество задач по каждому статусу и количество просроченных задач.
 @api_view(['GET', ])
 def tasks_statistic(request):
     total_tasks = Task.objects.count()
