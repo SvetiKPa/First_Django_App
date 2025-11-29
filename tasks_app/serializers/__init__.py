@@ -3,7 +3,9 @@ __all__ = [
     "TaskDetailedSerializer",
     "TaskCreateSerializer",
     "TaskUpdateSerializer",
-
+    "SubTaskSerializer",
+    "SubTaskCreateSerializer",
+    "SubTaskDetailSerializer",
 ]
 
 from .tasks import (
@@ -12,4 +14,10 @@ from .tasks import (
     TaskCreateSerializer,
     TaskUpdateSerializer,
 
+)
+
+from .subtasks import (
+    SubTaskSerializer,
+    SubTaskCreateSerializer,
+    SubTaskDetailSerializer,
 )

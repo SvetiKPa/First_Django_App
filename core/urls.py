@@ -20,7 +20,10 @@ from django.urls import path
 from tasks_app.views import (hello_world,
                              create_new_task,
                              get_task_by_id,
-                             get_all_tasks, tasks_statistic)
+                             get_all_tasks, tasks_statistic,
+                             SubTaskListCreateView, SubTaskDetailUpdateDeleteView
+
+                             )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,4 +35,7 @@ urlpatterns = [
     path('api/v1/tasks/create/', create_new_task),
     path('api/v1/tasks/<int:task_id>/', get_task_by_id),
     path('api/v1/tasks_statistic/', tasks_statistic),
+    path('api/v1/subtasks/', SubTaskListCreateView.as_view()),
+    path('api/v1/subtasks/create/', SubTaskListCreateView.as_view()),
+    path('api/v1/subtasks/<int:subtask_id>/', SubTaskDetailUpdateDeleteView.as_view()),
 ]

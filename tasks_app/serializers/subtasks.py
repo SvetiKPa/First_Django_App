@@ -3,19 +3,11 @@ from tasks_app.models import SubTask
 
 
 #class SubTaskListSerializer(APIView):
-class SubTaskListSerializer(serializers.ModelSerializer):
+class SubTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubTask
         fields = '__all__'
-    def get(self):              #TODO
-        ...
-    def post(self):
-        ...
-
-class SubTaskDetailedSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubTask
-        fields = '__all__'
+        read_only_fields = ['created_at']
 
 class SubTaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,16 +16,17 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'status',
-            'deadline'
+            'deadline',
+            'task'
         )
         read_only_fields = ['created_at']
 
-class SubTaskUpdateSerializer(serializers.ModelSerializer):
+
+class SubTaskDetailSerializer(serializers.ModelSerializer):
+    task_title = serializers.CharField(source='task.title', read_only=True)
+
     class Meta:
         model = SubTask
-        fields = (
-            'title',
-            'description',
-            'status',
-            'deadline'
-        )
+        fields = ['id', 'title', 'description', 'status', 'deadline', 'task', 'task_title', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'task_title']
+
