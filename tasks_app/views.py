@@ -13,6 +13,7 @@ from tasks_app.serializers import (TaskListSerializer,
                                    TaskCreateSerializer,
                                    TaskUpdateSerializer,
                                    SubTaskCreateSerializer,
+                                   SubTaskDetailSerializer,
                                    )
 
 
@@ -84,8 +85,11 @@ def tasks_statistic(request):
               "not_done": not_done},
         status=status.HTTP_200_OK
     )
+
+
 #########################################################################
 from rest_framework.views import APIView
+
 
 class SubTaskListCreateView(APIView):
     def get_filtered_queryset(self, query_params):
@@ -118,6 +122,7 @@ class SubTaskListCreateView(APIView):
             subtask_dto.save()
             return Response(subtask_dto.data, status=status.HTTP_201_CREATED)
         return Response(subtask_dto.errors, status.HTTP_400_BAD_REQUEST)
+
 
 class SubTaskDetailUpdateDeleteView(APIView):
     def get_object(self, pk):
@@ -162,16 +167,17 @@ class SubTaskDetailUpdateDeleteView(APIView):
         subtask.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 ######## task
 
 class TaskListCreateView(APIView):
-    #получение списка всех задач по дню недели
+    # получение списка всех задач по дню недели
     def get_filtered_queryset(self, query_params):
         queryset = Task.objects.all()
 
         weekday = query_params.get('weekday')
         weekday_name = query_params.get('weekday_name')
-        limit = query_params.get('limit')   # пагинацию
+        limit = query_params.get('limit')  # пагинацию
 
         # Фильтрация по числовому дню недели
         if weekday:
@@ -219,6 +225,7 @@ class TaskListCreateView(APIView):
             return Response(task_dto.data, status=status.HTTP_201_CREATED)
         return Response(task_dto.errors, status.HTTP_400_BAD_REQUEST)
 
+
 class TaskDetailUpdateDeleteView(APIView):
     def get_object(self, pk):
         try:
@@ -261,3 +268,68 @@ class TaskDetailUpdateDeleteView(APIView):
 
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+###############################
+# Реализуйте фильтрацию по полям status и deadline.
+# Реализуйте поиск по полям title и description.
+# Добавьте сортировку по полю created_at.
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.filters import SearchFilter
+
+
+class TaskListCreateAPIView(ListCreateAPIView):
+    # queryset = Task.objects.all().order_by('-created_at')
+    serializer_class = TaskListSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'description']
+    ordering_fields = ['created_at', 'deadline', 'status']
+    ordering = ['-created_at']
+
+
+    def get_queryset(self):
+        queryset = Task.objects.all()
+        status_filter = self.request.query_params.get('status')
+        deadline_filter = self.request.query_params.get('deadline')
+        if status_filter:
+            queryset = Task.objects.filter(status=status_filter)
+
+        if deadline_filter and 'T' in deadline_filter:
+            date_only = deadline_filter.split('T')[0]
+            queryset = Task.objects.filter(deadline__date=date_only)
+        elif deadline_filter:
+            queryset = Task.objects.filter(deadline__date=deadline_filter)
+
+    #     if deadline_filter:
+    #         queryset = Task.objects.filter(deadline=deadline_filter)
+        return queryset
+
+
+class TaskRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskDetailedSerializer
+
+
+class SubTaskListCreateAPIView(ListCreateAPIView):
+    serializer_class = SubTaskCreateSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'description']
+    ordering_fields = ['created_at', 'deadline', 'status']
+    ordering = ['-created_at']
+
+
+    def get_queryset(self):
+        queryset = SubTask.objects.all()
+        status_filter = self.request.query_params.get('status')
+        deadline_filter = self.request.query_params.get('deadline')
+        if status_filter:
+            queryset = SubTask.objects.filter(status=status_filter)
+        if deadline_filter:
+            queryset = SubTask.objects.filter(deadline=deadline_filter)
+        return queryset
+
+
+class SubTaskRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = SubTask.objects.all()
+    serializer_class = SubTaskDetailSerializer
