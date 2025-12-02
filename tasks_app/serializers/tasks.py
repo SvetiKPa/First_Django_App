@@ -8,8 +8,8 @@ from tasks_app.serializers.subtasks import SubTaskSerializer
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
-
+#        fields = '__all__'
+        exclude = ['description', 'categories']
 
 class TaskDetailedSerializer(serializers.ModelSerializer):
     subtasks = SubTaskSerializer(many=True, read_only=True) #вложенный сериализатор
