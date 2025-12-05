@@ -1,19 +1,22 @@
+from itertools import count
+
 from django.utils import timezone
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
 from django.http import HttpResponse
 from django.db.models import Count
 
-from tasks_app.models import Task, SubTask
+from tasks_app.models import Task, SubTask, Category
 from tasks_app.serializers import (TaskListSerializer,
                                    TaskDetailedSerializer,
                                    TaskCreateSerializer,
                                    TaskUpdateSerializer,
                                    SubTaskCreateSerializer,
                                    SubTaskDetailSerializer,
+                                   CategorySerializer,
                                    )
 
 
@@ -287,7 +290,6 @@ class TaskListCreateAPIView(ListCreateAPIView):
     ordering_fields = ['created_at', 'deadline', 'status']
     ordering = ['-created_at']
 
-
     def get_queryset(self):
         queryset = Task.objects.all()
         status_filter = self.request.query_params.get('status')
@@ -301,8 +303,8 @@ class TaskListCreateAPIView(ListCreateAPIView):
         elif deadline_filter:
             queryset = Task.objects.filter(deadline__date=deadline_filter)
 
-    #     if deadline_filter:
-    #         queryset = Task.objects.filter(deadline=deadline_filter)
+        #     if deadline_filter:
+        #         queryset = Task.objects.filter(deadline=deadline_filter)
         return queryset
 
 
@@ -318,7 +320,6 @@ class SubTaskListCreateAPIView(ListCreateAPIView):
     ordering_fields = ['created_at', 'deadline', 'status']
     ordering = ['-created_at']
 
-
     def get_queryset(self):
         queryset = SubTask.objects.all()
         status_filter = self.request.query_params.get('status')
@@ -333,3 +334,15 @@ class SubTaskListCreateAPIView(ListCreateAPIView):
 class SubTaskRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskDetailSerializer
+
+##########################
+from rest_framework.viewsets import ModelViewSet
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()  # используем SoftDeleteManager
+    serializer_class = CategorySerializer
+
+    @action(methods=['get',], detail=False, url_path='count_categories')
+    def get_count_categories(self, request):
+        count_categ = Category.objects.count()
+        return Response(data=count_categ, status=status.HTTP_200_OK )

@@ -15,13 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-# from test_app.views import hello_world
+from django.urls import path, include
 from tasks_app.views import (hello_world,
-                             # create_new_task,
-                             # get_task_by_id,
-                             # get_all_tasks,
-                             tasks_statistic,
+                            tasks_statistic,
                              SubTaskListCreateView, SubTaskDetailUpdateDeleteView,
                              TaskListCreateView, TaskDetailUpdateDeleteView,
 TaskListCreateAPIView, TaskRetrieveUpdateDestroyAPIView,
@@ -29,25 +25,8 @@ SubTaskListCreateAPIView, SubTaskRetrieveUpdateDestroyAPIView,
                              )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('user/<str:user_name>', hello_world),
-
-    # CRUD for Task
-
-    # path('api/v1/tasks/', get_all_tasks),
-    # path('api/v1/tasks/create/', create_new_task),
-    # path('api/v1/tasks/<int:task_id>/', get_task_by_id),
+    path('user/<str:user_name>/', hello_world),
+    path('admin/', admin.site.urls),  # http://127.0.0.1:8000/admin/
+    path('api/v1/', include('routers')),  # http://127.0.0.1:8000/api/v1/
     path('api/v1/tasks_statistic/', tasks_statistic),
-    # path('api/v1/tasks/', TaskListCreateView.as_view()),
-    # path('api/v1/tasks/create/', TaskListCreateView.as_view()),
-    # path('api/v1/tasks/<int:task_id>/', TaskDetailUpdateDeleteView.as_view()),
-    # path('api/v1/subtasks/', SubTaskListCreateView.as_view()),
-    # path('api/v1/subtasks/create/', SubTaskListCreateView.as_view()),
-    # path('api/v1/subtasks/<int:subtask_id>/', SubTaskDetailUpdateDeleteView.as_view()),
-    path('api/v1/tasks/', TaskListCreateAPIView.as_view()),
-    # path('api/v1/tasks/create/', TaskListCreateAPIView.as_view()),
-    path('api/v1/tasks/<int:pk>/', TaskRetrieveUpdateDestroyAPIView.as_view()),
-    path('api/v1/subtasks/', SubTaskListCreateAPIView.as_view()),
-    # path('api/v1/subtasks/create/', SubTaskListCreateAPIView.as_view()),
-    path('api/v1/subtasks/<int:pk>/', SubTaskRetrieveUpdateDestroyAPIView.as_view()),
 ]
