@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from tasks_app.managers import SoftDeleteManager
 
 # Create your models here.
 class BaseTask(models.Model):
@@ -18,6 +19,8 @@ class BaseTask(models.Model):
     deadline = models.DateTimeField(verbose_name="Дедлайн")
     created_date = models.DateField(auto_now_add=True, verbose_name="Дата создания")
     created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False, verbose_name="Удалено")
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name="Дата удаления")
 
     class Meta:
         constraints = [
@@ -63,17 +66,23 @@ class SubTask(BaseTask):
 
 
 class Category(models.Model):
-    name = models.CharField(
-        max_length=100,
-        unique=True
-    )
+    name = models.CharField(max_length=100, unique=True )
+    is_deleted = models.BooleanField(default=False, verbose_name="Удалено")
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name="Дата удаления")
+
+    objects = SoftDeleteManager()   #не “удалены” из базы
+    all_objects = models.Manager()  # Для доступа ко всем записям
 
     class Meta:
         db_table = "task_manager_category"
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
+    def delete(self, *args, **kwargs):
+        self.is_deleted = True
+        self.save()
+
+
     def __str__(self):
         return f"{self.name}"
-
 
