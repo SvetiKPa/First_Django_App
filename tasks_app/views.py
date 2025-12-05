@@ -1,4 +1,4 @@
-from itertools import count
+from rest_framework import permissions
 
 from django.utils import timezone
 
@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from rest_framework import status
 from django.http import HttpResponse
 from django.db.models import Count
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 
 from tasks_app.models import Task, SubTask, Category
 from tasks_app.serializers import (TaskListSerializer,
@@ -289,6 +290,7 @@ class TaskListCreateAPIView(ListCreateAPIView):
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'deadline', 'status']
     ordering = ['-created_at']
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         queryset = Task.objects.all()
@@ -319,6 +321,7 @@ class SubTaskListCreateAPIView(ListCreateAPIView):
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'deadline', 'status']
     ordering = ['-created_at']
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         queryset = SubTask.objects.all()
@@ -341,6 +344,7 @@ from rest_framework.viewsets import ModelViewSet
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()  # используем SoftDeleteManager
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminUser]
 
     @action(methods=['get',], detail=False, url_path='count_categories')
     def get_count_categories(self, request):
